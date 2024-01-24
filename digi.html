@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hierarchical Tree Formation</title>
+<style>
+body {
+font-family: sans-serif;
+}
+.tree {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+.node {
+display: flex;
+align-items: center;
+padding: 10px;
+border: 1px solid black;
+margin-bottom: 10px;
+}
+.node:hover {
+background-color: #eee;
+}
+.node.selected {
+background-color: #ccc;
+}
+.node.parent {
+cursor: pointer;
+}
+.node.child {
+margin-left: 20px;
+}
+.node.leaf {
+margin-left: 40px;
+}
+.input {
+width: 100%;
+margin-bottom: 10px;
+}
+.button {
+margin-top: 10px;
+}
+</style>
+
+<script>
+    var tree = {
+      "id": 1,
+      "type": "parent",
+      "text": "Parent Node",
+      "children": [
+        {
+          "id": 2,
+          "type": "child",
+          "text": "Child Node 1",
+          "children": []
+        },
+        {
+          "id": 3,
+          "type": "child",
+          "text": "Child Node 2",
+          "children": []
+        }
+      ]
+    };
+
+</script>
+</head>
+<body>
+<h1>Hierarchical Tree Formation</h1>
+<div id="tree"></div>
+<input type="text" id="node-text" placeholder="Enter node text">
+<select id="node-type">
+<option value="single">Single Node</option>
+<option value="child">Child Node</option>
+<option value="parent">Parent Node</option>
+</select>
+<button type="button" id="add-node">Add Node</button>
+<script>
+var tree = {
+nodes: []
+};
+function renderTree() {
+var container = document.getElementById('tree');
+container.innerHTML = '';
+for (var i = 0; i < tree.nodes.length; i++) {
+var node = tree.nodes[i];
+container.appendChild(renderNode(node));
+}
+}
+function renderNode(node) {
+var div = document.createElement('div');
+div.classList.add('node');
+div.classList.add(node.type);
+div.textContent = node.text;
+if (node.children.length > 0) {
+div.classList.add('parent');
+div.addEventListener('click', function() {
+toggleNode(node);
+});
+}
+return div;
+}
+function toggleNode(node) {
+node.expanded = !node.expanded;
+if (node.expanded) {
+node.children.forEach(function(child) {
+document.getElementById(child.id).classList.remove('hidden');
+});
+} else {
+node.children.forEach(function(child) {
+document.getElementById(child.id).classList.add('hidden');
+});
+}
+}
+function addNode() {
+var nodeText = document.getElementById('node-text').value;
+var nodeType = document.getElementById('node-type').value;
+var newNode = {
+id: Date.now(),
+type: nodeType,
+text: nodeText,
+children: []
+};
+if (nodeType === 'parent') {
+tree.nodes.push(newNode);
+} else {
+var selectedNode = getSelectedNode();
+if (selectedNode) {
+selectedNode.children.push(newNode);
+}
+}
+renderTree();
+}
+function getSelectedNode() {
+var selectedNode = null;
+var nodes = document.querySelectorAll('.node');
+for (var i = 0; i < nodes.length; i++) {
+if (nodes[i].classList.contains('selected')) {
+selectedNode = nodes[i];
+break;
+}
+}
+return selectedNode;
+}
+document.getElementById('add-node').addEventListener('click', addNode);
+renderTree();
+</script>
+
+</body>
+</html>
